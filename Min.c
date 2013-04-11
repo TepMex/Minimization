@@ -167,52 +167,24 @@ int get_difference(int* s1, int* s2)
 	}
 }
 
-void sort_sets(int sets[][MAX_BASE][MAX_LENGHT])
-{
-	int len1 = arrlen(set1);
-	int lenF = arrlen(setF);
-	
-	int pointers[max_group_num+1];
-	int k = 0;
-	while(k<=max_group_num)
-	{
-		pointers[k] = 0;
-		k++;
-	}
-	printf("%i %i \n",sets[4][0][0],k);
-	int i = 0;
-	int j = 0;
-	
-	int* current = malloc(65536);
-	
-	while(i<len1)
-	{
-		group_from_int(set1[i],base,current);
-		int group_n = get_group_num(current);
-		printf("%i: ",group_n);
-		print_set(current);
-		printf(" \n");
-		memcpy(sets[group_n][pointers[group_n]++], current, sizeof(current));
-		i++;
-	}
-	while(j<lenF)
-	{
-		group_from_int(setF[j],base,current);
-		int group_n = get_group_num(current);
-		memcpy(sets[group_n][pointers[group_n]++], current, sizeof(current));
-		j++;
-	}
-}
-
 void minimize()
 {
 	int len1 = arrlen(set1);
 	int lenF = arrlen(setF);
 	
-	int allsets[len1+lenF][MAX_LENGHT];
+	int allsets[MAX_LENGHT][MAX_LENGHT];
+	int newsets[MAX_LENGHT][MAX_LENGHT];
+	int cover_table[len1+lenF][MAX_LENGHT];
 	int el_in_grpn[MAX_GROUP];
+	int marks[MAX_LENGHT];
 	
 	int j=0;
+	
+	int allsets_lenght = 0;
+	
+	int is_changes = 0;
+	int newsets_pointer = 0;
+	int cover_table_pointer = 0;
 	while(j<MAX_GROUP)
 	{
 		el_in_grpn[j]=0;
@@ -229,6 +201,7 @@ void minimize()
 		ind++;
 		i++;
 	}
+	allsets_lenght += i;
 	i = 0;
 	while(i<lenF)
 	{
@@ -237,40 +210,116 @@ void minimize()
 		ind++;
 		i++;
 	}
+	allsets_lenght += i;
 	//printf("%i %i %i %i \n",el_in_grpn[0],el_in_grpn[1],el_in_grpn[2],el_in_grpn[3]);
-	i=0;
-	while(i<(max_group_num-1))
+	do
 	{
-		j = 0;
-		while(j<el_in_grpn[i])
+		is_changes = 0;
+		newsets_pointer = 0;
+		i=0;
+		//int y = 0;
+		
+		int l = 0;
+		while(l<MAX_LENGHT)
 		{
-			int k=0;
-			int s1[MAX_LENGHT];
-			get_set_from_num(i,j,allsets,s1);
-			while(k<el_in_grpn[i+1])
-			{
-				//printf("==%i==\n ",k);
-				int s2[MAX_LENGHT];
-				get_set_from_num(i+1,k,allsets,s2);
-				int diff_ind;
-				if((diff_ind = get_difference(s1,s2)) >= 0)
-				{
-					s2[diff_ind] = N;
-					print_set(s2);
-					printf("\n");
-				}
-				else
-				{
-					//printf(" %i \n",diff_ind);
-				}
-				k++;
-			}
-			j++;
+			marks[l] = 0;
+			l++;
 		}
+		
+		while(i<(max_group_num-1))
+		{
+			j = 0;
+			while(j<el_in_grpn[i])
+			{
+				int k=0;
+				int s1[MAX_LENGHT];
+				int s1_index = -1;
+				s1_index = get_set_from_num(i,j,allsets,s1);
+				if(s1_index < 0)
+				{
+					printf("Error: no sets found for group: %i, index: %i",i,j);
+				}
+				
+				while(k<el_in_grpn[i+1])
+				{
+					int s2[MAX_LENGHT];
+					int s2_index = -1;
+					
+					if((s2_index = get_set_from_num(i+1,k,allsets,s2)) < 0)
+					{
+						printf("Error: no sets found for group: %i, index: %i",i+1,k);
+					}
+					
+
+					int diff_ind;
+					if((diff_ind = get_difference(s1,s2)) >= 0)
+					{
+						s2[diff_ind] = N;
+						memcpy(newsets[newsets_pointer],s2,sizeof(s2));
+						newsets_pointer++;
+						marks[s1_index] = 1;
+						marks[s2_index] = 1;
+						is_changes = 1;
+						print_set(s2);
+					}
+					else
+					{
+						//printf(" %i \n",diff_ind);
+					}
+					k++;
+					
+				}
+				j++;
+			}
+			i++;
+		}
+		//y++;
+		//printf("\n===%i===\n", arrlen(newsets[0]));
+		//print_set(newsets[0]);
+		int np = 0;
+		while(np++<allsets_lenght)
+		{
+			if(marks[np])
+			{
+				continue;
+			}
+			else
+			{
+				memcpy(cover_table[cover_table_pointer++], allsets[np],sizeof(allsets[np]));
+				//printf("==%i==\n",marks[np]);
+				//print_set(allsets[np]);
+			}
+		}
+		
+		memcpy(allsets,newsets,sizeof(newsets));
+		//print_set(newsets[0]);
+		allsets_lenght = newsets_pointer;
+		max_group_num = max_group_num -1;
+		
+		int peka = 0;
+		while(peka<MAX_GROUP)
+		{
+			el_in_grpn[peka] = 0;
+			peka++;
+		}
+		
+		int grpn=0;
+		while(grpn<allsets_lenght)
+		{
+			el_in_grpn[get_group_num(allsets[grpn])]++;
+			grpn++;
+		}
+		
+	} while(is_changes);
+	
+	i=0;
+	while(i<cover_table_pointer)
+	{
+		//print_set(cover_table[i]);
 		i++;
 	}
+	
 }
-
 void print_set(int* set)
 {
 	int len = arrlen(set);
@@ -285,8 +334,10 @@ void print_set(int* set)
 		{
 			printf("%i",set[i]);
 		}
+
 		i++;
 	}
+	printf("\n");
 }
 
 int get_max_group_num(int base)
@@ -311,7 +362,7 @@ int get_set_from_num(int group, int index,int allsets[][MAX_LENGHT], int* dest)
 			if(ind == index)
 			{
 				memcpy(dest,allsets[i],sizeof(allsets[i]));
-				return 1;
+				return i;
 			}
 			else
 			{
@@ -320,6 +371,6 @@ int get_set_from_num(int group, int index,int allsets[][MAX_LENGHT], int* dest)
 		}
 		i++;
 	}
-	return 0;
+	return -1;
 	
 }

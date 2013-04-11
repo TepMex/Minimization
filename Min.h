@@ -15,7 +15,6 @@ void group_from_int(int,int,int*);
 int get_group_num(int*);
 int get_difference(int*, int*);
 void minimize(void);
-void sort_sets(int sets[][MAX_BASE][MAX_LENGHT]);
 void print_set(int*);
 int get_max_group_num(int);
 int get_set_from_num(int, int,int[][MAX_LENGHT],int*);
