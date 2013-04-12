@@ -219,7 +219,6 @@ void minimize()
 		is_changes = 0;
 		newsets_pointer = 0;
 		i=0;
-		printf("===%i===\n",i);
 		//int y = 0;
 		
 		int l = 0;
@@ -356,7 +355,8 @@ void minimize()
 	i=0;
 	while(i<cover_table_pointer)
 	{
-		print_set(cover_table[i]);
+		//print_set(cover_table[i]);
+		printf("===%i===\n",set_covers(cover_table[i],set1));
 		i++;
 	}
 	
@@ -481,5 +481,43 @@ int weights_contains(int* weights,int weight, int max)
 		i++;
 	}
 	return 0;
+	
+}
+
+int set_covers(int* set, int* worksets)
+{
+	int lenW = arrlen(worksets);
+	int lenS = arrlen(set);
+	
+	int result = 0;
+	
+	int i = 0;
+	while(i<lenW)
+	{
+		int s[MAX_LENGHT];
+		group_from_int(worksets[i],base,s);
+		int j = 0;
+		int eq = 1;
+		while(j<lenS)
+		{
+			if(set[j] == N)
+			{
+				s[j] = set[j];
+			}
+			if(s[j] != set[j])
+			{
+				eq = 0;
+				break;
+			}
+			j++;
+		}
+		if(eq)
+		{
+			result++;
+		}
+		i++;
+	}
+	
+	return result;
 	
 }

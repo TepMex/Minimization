@@ -22,3 +22,4 @@ int get_weight(int* set);
 int intpow(int num, int pow);
 int weights_contains(int* weights,int weight, int max);
 int get_min_group_num(int* els);
+int set_covers(int* set, int* worksets);
