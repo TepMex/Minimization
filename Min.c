@@ -5,8 +5,8 @@
 
 #include "Min.h"
 
-int set0[MAX_LENGHT] = {2,3,7,END};
 int set1[MAX_LENGHT] = {1,5,6,END};
+int set0[MAX_LENGHT] = {2,3,7,END};
 int setF[MAX_LENGHT];
 int base;
 int max_group_num;
@@ -219,6 +219,7 @@ void minimize()
 		is_changes = 0;
 		newsets_pointer = 0;
 		i=0;
+		printf("===%i===\n",i);
 		//int y = 0;
 		
 		int l = 0;
@@ -233,7 +234,7 @@ void minimize()
 			//print_set(allsets[l]);
 			l++;
 		}
-		while(i<(max_group_num-1))
+		while(i<(max_group_num))
 		{
 			j = 0;
 			while(j<el_in_grpn[i])
@@ -413,6 +414,20 @@ int get_set_from_num(int group, int index,int allsets[][MAX_LENGHT], int* dest)
 	}
 	return -1;
 	
+}
+
+int get_min_group_num(int* els)
+{
+	int i = 0;
+	while(i<max_group_num)
+	{
+		if(els[i] != 0)
+		{
+			break;
+		}
+		i++;
+	}
+	return i;
 }
 
 int get_weight(int* set)
