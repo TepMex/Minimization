@@ -5,19 +5,19 @@
 #define MAX_GROUP 32
 
 
-int arrlen(int*);
-void get_fictive(int*, int*, int*);
-int cmpfunc(const void *, const void *);
-int max(int, int);
-int base2(int);
-int arr_contains(int*, int);
-void group_from_int(int,int,int*);
-int get_group_num(int*);
-int get_difference(int*, int*);
+int arrlen(int* arr);
+void get_fictive(int* s1, int* s0, int* dest);
+int cmpfunc (const void * a, const void * b);
+int max(int a, int b);
+int base2(int arg);
+int arr_contains(int* arr, int val);
+void group_from_int(int arg, int base, int* dest);
+int get_group_num(int* arr);
+int get_difference(int* s1, int* s2);
 void minimize(void);
-void print_set(int*);
-int get_max_group_num(int);
-int get_set_from_num(int, int,int[][MAX_LENGHT],int*);
+void print_set(int* set);
+int get_max_group_num(int base);
+int get_set_from_num(int group, int index,int allsets[][MAX_LENGHT], int* dest);
 int get_weight(int* set);
 int intpow(int num, int pow);
 int weights_contains(int* weights,int weight, int max);
