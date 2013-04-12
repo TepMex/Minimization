@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "Min.h"
 
-int set0[MAX_LENGHT] = {2,7,9,13,15,END};
-int set1[MAX_LENGHT] = {0,1,3,5,8,END};
+int set0[MAX_LENGHT] = {2,3,7,END};
+int set1[MAX_LENGHT] = {1,5,6,END};
 int setF[MAX_LENGHT];
 int base;
 int max_group_num;
@@ -211,6 +212,7 @@ void minimize()
 		i++;
 	}
 	allsets_lenght += i;
+	
 	//printf("%i %i %i %i \n",el_in_grpn[0],el_in_grpn[1],el_in_grpn[2],el_in_grpn[3]);
 	do
 	{
@@ -225,7 +227,12 @@ void minimize()
 			marks[l] = 0;
 			l++;
 		}
-		
+		l=0;
+		while(l<allsets_lenght)
+		{
+			//print_set(allsets[l]);
+			l++;
+		}
 		while(i<(max_group_num-1))
 		{
 			j = 0;
@@ -260,7 +267,7 @@ void minimize()
 						marks[s1_index] = 1;
 						marks[s2_index] = 1;
 						is_changes = 1;
-						print_set(s2);
+						//print_set(s2);
 					}
 					else
 					{
@@ -273,27 +280,60 @@ void minimize()
 			}
 			i++;
 		}
+
 		//y++;
-		//printf("\n===%i===\n", arrlen(newsets[0]));
 		//print_set(newsets[0]);
 		int np = 0;
-		while(np++<allsets_lenght)
+		while(np<allsets_lenght)
 		{
 			if(marks[np])
 			{
-				continue;
 			}
 			else
 			{
+				//print_set(allsets[np]);
+				//printf("%i === \n",np);
 				memcpy(cover_table[cover_table_pointer++], allsets[np],sizeof(allsets[np]));
 				//printf("==%i==\n",marks[np]);
 				//print_set(allsets[np]);
 			}
+			np++;
+		}
+		//printf("==========%i \n",newsets_pointer);
+		int h = 0;
+		int aind = 0;
+		int weights[MAX_LENGHT];
+		while(h<MAX_LENGHT)
+		{
+			weights[h] = -1;
+			h++;
+		}
+		h = 0;
+		//printf("-------\n");
+		while(h<newsets_pointer)
+		{
+			int w = get_weight(newsets[h]);
+			//printf("==========%i \n",w);
+			int contains = weights_contains(weights,w,MAX_LENGHT);
+			if(contains)
+			{
+				//printf("@%i\n",w);
+				//print_set(newsets[h]);
+			}
+			else
+			{
+				//printf("@@%i\n",w);
+				//print_set(newsets[h]);
+				weights[aind] = get_weight(newsets[h]);
+				memcpy(allsets[aind++],newsets[h],sizeof(newsets[h]));
+			}
+			h++;
 		}
 		
-		memcpy(allsets,newsets,sizeof(newsets));
+		//printf("2==========%i \n",aind);
+		//memcpy(allsets,newsets,sizeof(newsets));
 		//print_set(newsets[0]);
-		allsets_lenght = newsets_pointer;
+		allsets_lenght = aind;
 		max_group_num = max_group_num -1;
 		
 		int peka = 0;
@@ -315,7 +355,7 @@ void minimize()
 	i=0;
 	while(i<cover_table_pointer)
 	{
-		//print_set(cover_table[i]);
+		print_set(cover_table[i]);
 		i++;
 	}
 	
@@ -372,5 +412,59 @@ int get_set_from_num(int group, int index,int allsets[][MAX_LENGHT], int* dest)
 		i++;
 	}
 	return -1;
+	
+}
+
+int get_weight(int* set)
+{
+	int len = arrlen(set);
+	int i = 0;
+	int weight = 0;
+	
+	while(i<len)
+	{
+		weight += set[i]*intpow(3,i);
+		i++;
+	}
+	
+	return weight;
+	
+}
+
+int intpow(int num, int pow)
+{
+	int i = 0;
+	int result = 1;
+	
+	if(num == 0)
+	{
+		return 0;
+	}
+	if(num == 1)
+	{
+		return 1;
+	}
+	
+	while(i<pow)
+	{
+		result *= num;
+		i++;
+	}
+	return result;
+}
+
+int weights_contains(int* weights,int weight, int max)
+{
+	
+	int i = 0;
+	while(i<max)
+	{
+		if(weights[i] == weight)
+		{
+			return 1;
+		}
+		i++;
+	}
+	return 0;
 	
 }

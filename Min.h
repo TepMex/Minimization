@@ -18,3 +18,6 @@ void minimize(void);
 void print_set(int*);
 int get_max_group_num(int);
 int get_set_from_num(int, int,int[][MAX_LENGHT],int*);
+int get_weight(int* set);
+int intpow(int num, int pow);
+int weights_contains(int* weights,int weight, int max);
