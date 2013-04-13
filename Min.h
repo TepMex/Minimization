@@ -3,6 +3,7 @@
 #define MAX_LENGHT 320
 #define MAX_BASE 1500
 #define MAX_GROUP 32
+#define VARNAMES "abcdefghijklmnopqrstuvwxyz"
 
 
 int arrlen(int* arr);
@@ -23,3 +24,7 @@ int intpow(int num, int pow);
 int weights_contains(int* weights,int weight, int max);
 int get_min_group_num(int* els);
 int set_covers(int* set, int* worksets);
+int cmp_sets_by_cover(const void * a, const void * b);
+int is_covered(int* set,int workset);
+int is_repeat(int allsets[][MAX_LENGHT], int len, int nset, int* worksets);
+void print_implicant(int* impl);

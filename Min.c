@@ -5,8 +5,8 @@
 
 #include "Min.h"
 
-int set1[MAX_LENGHT] = {1,5,6,END};
-int set0[MAX_LENGHT] = {2,3,7,END};
+int set1[MAX_LENGHT] = {0,1,2,3,5,7,8,10,12,13,15,END};
+int set0[MAX_LENGHT] = {4,6,9,11,14,END};
 int setF[MAX_LENGHT];
 int base;
 int max_group_num;
@@ -352,13 +352,36 @@ void minimize()
 		
 	} while(is_changes);
 	
-	i=0;
+	qsort(cover_table,cover_table_pointer,sizeof(int)*MAX_LENGHT,cmp_sets_by_cover);
+	
+	int implicants[cover_table_pointer][MAX_LENGHT];
+	int impl_pointer = 0;
+	int append = cover_table_pointer;
+	
+	i = 0;
 	while(i<cover_table_pointer)
 	{
-		//print_set(cover_table[i]);
-		printf("===%i===\n",set_covers(cover_table[i],set1));
+		if(!is_repeat(cover_table, append, i, set1))
+		{
+			memcpy(implicants[impl_pointer++],cover_table[i],sizeof(cover_table[i]));
+			memcpy(cover_table[append++],cover_table[i],sizeof(cover_table[i]));
+		}
 		i++;
 	}
+		
+	i = 0;
+	while(i<impl_pointer)
+	{
+		printf("(");
+		print_implicant(implicants[i]);
+		printf(")");
+		if(i != impl_pointer - 1)
+		{
+			printf("+");
+		}
+		i++;
+	}
+	printf("\n");
 	
 }
 void print_set(int* set)
@@ -520,4 +543,83 @@ int set_covers(int* set, int* worksets)
 	
 	return result;
 	
+}
+
+int cmp_sets_by_cover(const void * a, const void * b)
+{
+	 return ( set_covers((int*)a,set1) - set_covers((int*)b,set1) );
+}
+
+int is_covered(int* set,int workset)
+{
+	int w[] = {workset,END};
+	if(set_covers(set,w))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int is_repeat(int allsets[][MAX_LENGHT], int len, int nset, int* worksets)
+{
+	int i = 0;
+	int lenW = arrlen(worksets);
+	int target_sets[MAX_LENGHT];
+	int target_pointer = 0;
+	
+	while(i<lenW)
+	{
+		if(is_covered(allsets[nset],worksets[i]))
+		{
+			target_sets[target_pointer++] = worksets[i];
+		}
+		i++;
+	}
+	i = 0;
+	
+	while(i<target_pointer)
+	{
+		int j = nset+1;
+		int complete = 0;
+		while(j<len)
+		{
+			if(is_covered(allsets[j],target_sets[i]))
+			{
+				complete = 1;
+			}
+			j++;
+		}
+		if(!complete)
+		{
+			return 0;
+		}
+		i++;
+	}
+	
+	return 1;
+}
+
+void print_implicant(int* impl)
+{
+	int len = arrlen(impl);
+	
+	int j = 0;
+	
+	while(j<len)
+	{
+		if(impl[j] == N)
+		{
+			j++;
+			continue;
+		}
+		if(impl[j] == 0)
+		{
+			printf("!");
+		}
+		printf("%c",VARNAMES[j]);
+		j++;
+	}
 }
