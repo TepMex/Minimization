@@ -5,8 +5,8 @@
 
 #include "Min.h"
 
-int set1[MAX_LENGHT] = {0,1,2,3,5,7,8,10,12,13,15,END};
-int set0[MAX_LENGHT] = {4,6,9,11,14,END};
+int set1[MAX_LENGHT] = {1,5,6,END};
+int set0[MAX_LENGHT] = {2,3,7,END};
 int setF[MAX_LENGHT];
 int base;
 int max_group_num;
